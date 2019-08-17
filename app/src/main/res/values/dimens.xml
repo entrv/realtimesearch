@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="widget_list_padding_10">10dp</dimen>
+    <dimen name="activity_vertical_margin">6dp</dimen>
+    <dimen name="activity_horizontal_margin">6dp</dimen>
+    <dimen name="add_row_hint_size">20dp</dimen>
+    <dimen name="list_text_height">40dp</dimen>
+    <dimen name="widget_margin">10dp</dimen>
+    <dimen name="list_title_sp">25dp</dimen>
+    <dimen name="list_rank_cnt_sp">20dp</dimen>
+    <dimen name="list_img_size">40dp</dimen>
+    <dimen name="widget_title_height">40dp</dimen>
+    <dimen name="widget_img_padding_6">6dp</dimen>
+    <dimen name="widget_img_padding_8">8dp</dimen>
+    <dimen name="widget_img_padding_4">4dp</dimen>
+    <dimen name="widget_list_padding_5">5dp</dimen>
+    <dimen name="widget_list_padding_3">3dp</dimen>
+    <dimen name="widget_list_rank_width">160dp</dimen>
+    <dimen name="widget_list_rank_text_size">30dp</dimen>
+    <dimen name="widget_2cell_size">400dp</dimen>
+</resources>

@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">realtimesearch</string>
+    <string name="dialog_text">dialog_text</string>
+    <string name="empty_list">empty_list</string>
+    <string name="check_network_toast">check_network_toast</string>
+    <string name="ranking_text_push">ranking_text_push</string>
+    <string name="ranking_text_show">ranking_text_show</string>
+    <string name="notification_name">notification_name</string>
+    <string name="add_rank_text_hint">add_rank_text_hint</string>
+
 </resources>
