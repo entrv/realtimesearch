@@ -32,11 +32,13 @@
                 android:value=".MainActivity" />
         </activity>
 
-        <service android:name=".RRBackgroudService" />
-        <receiver android:name=".RRAlamReceiver" />
+        <service android:name=".RRBackgroundService" />
+        <receiver android:name=".RRAlarmReceiver" />
 
         <receiver
-            android:name=".WidgetProvider">
+            android:name=".WidgetProvider"
+            android:label="위젯실시간검색어"
+            >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

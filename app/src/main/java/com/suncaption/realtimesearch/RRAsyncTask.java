@@ -111,10 +111,16 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
         super.onPostExecute(aVoid);
         if(isConnected()) {
             if (fromWhere == FROM_WIDGET) {
+                Log.d("entrv", "WIDGET_ROW: " + "start===" + naverArr.size() +"==="+ daumArr.size());
                 if (naverArr.size() > 0 && daumArr.size() > 0) {
                     RemoteViews updateViews = new RemoteViews(taskContext.getPackageName(),
                             R.layout.widget_layout);
+                    Log.d("entrv", "WIDGET_ROW: " + WIDGET_ROW);
                     for (int i = 0; i < WIDGET_ROW; i++) {
+                        Log.d("entrv", "naverArr.get(i).getTitle(): " + naverArr.get(i).getTitle());
+                        Log.d("entrv", "naverArr.get(i).getTitle(): " + daumArr.get(i).getTitle());
+
+
                         updateViews.setTextViewText(taskContext.getResources().getIdentifier(
                                 "naverTV" + (i + 1)
                                 ,"id"
@@ -278,13 +284,16 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
                         System.out.println("------------------------------------------");*//*
                     }*/
                 }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else if (DAUM_SITE.equalsIgnoreCase(whatSite)) {
             daumArr.clear();
             try {
-                Document document = Jsoup.connect("http://www.daum.net").get();
+                Document document = Jsoup.connect("http://www.daum.net")
+                        .header("Connection", "close")
+                        .header("Accept-Encoding", "identity").get();
 
                 if (document != null) {
                     // class 가 rank_dummy 를 가지고 있는 div 태그는 포함시키지 않는다.
@@ -309,11 +318,11 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
                             item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_down));
                         }
 
-                        System.out.println("랭킹 : " + (i + 1));
+                        /*System.out.println("랭킹 : " + (i + 1));
                         System.out.println("검색어 : " + elements.get(i).select("span.txt_issue").text());
                         System.out.println("링크 URL : " + elements.get(i).select("span.txt_issue>a").attr("href"));
                         System.out.println("상승여부 : " + elements.get(i).select("em.rank_result").text());
-
+*/
                         elements.get(i).select("em.rank_result>span.ico_pctop").remove();
                         item.setUpDownCnt(elements.get(i).select("em.rank_result").text().replace("신규진입",""));
                         daumArr.add(item);
