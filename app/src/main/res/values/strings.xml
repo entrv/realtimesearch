@@ -1,11 +1,13 @@
 <resources>
-    <string name="app_name">realtimesearch</string>
-    <string name="dialog_text">dialog_text</string>
+    <string name="app_name">실시간음악순위</string>
+    <string name="dialog_text">찾고있습니다.</string>
     <string name="empty_list">내용이 없습니다.</string>
     <string name="check_network_toast">네트워크가 원할하지 않습니다.</string>
     <string name="ranking_text_push">검색어 등록 알림.</string>
     <string name="ranking_text_show">올라왔습니다.</string>
     <string name="notification_name">notification_name</string>
-    <string name="add_rank_text_hint">원하시는 단어를 등록하세요</string>
-
+    <string name="add_rank_text_hint">알림을 원하는 단어 등록</string>
+    <string name="banner_ad_unit_id">ca-app-pub-8297558424373117/1078596736</string>
+    <string name="banner_reward_ad_unit_id">ca-app-pub-8297558424373117/9729389519</string>
+    <string name="action_site_choice">사이트선택</string>
 </resources>

@@ -8,6 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 
 public class RRListAdapter extends BaseAdapter {
@@ -53,14 +55,23 @@ public class RRListAdapter extends BaseAdapter {
             holder.titleView = (TextView)view.findViewById(R.id.item_text);
             holder.upDownView = (TextView)view.findViewById(R.id.item_updown);
             holder.rankImage = (ImageView)view.findViewById(R.id.item_img);
+            holder.rankText = (TextView) view.findViewById(R.id.item_rank);
+            holder.thumbnailImage = (ImageView)view.findViewById(R.id.item_thumbnail);
+            holder.singerText = (TextView) view.findViewById(R.id.item_singer);
+            holder.albumTitleText = (TextView) view.findViewById(R.id.item_albumtitle);
+
 
             view.setTag(holder);
         }
 
         final RRListItem listItem = listItemList.get(i);
-        holder.titleView.setText(listItem.getRank()+listItem.getTitle());
+        holder.rankText.setText(listItem.getRank());
+        holder.singerText.setText(listItem.getSinger());
+        holder.titleView.setText(listItem.getTitle());
         holder.upDownView.setText(listItem.getUpDownCnt());
         holder.rankImage.setImageDrawable(listItem.getUpdownImg());
+        holder.albumTitleText.setText(listItem.getAlbumTitle());
+
         holder.rankImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,6 +80,13 @@ public class RRListAdapter extends BaseAdapter {
                 }
             }
         });
+
+        Glide
+                .with(view)
+                .load(listItem.getThumbnail())
+                .centerCrop()
+
+                .into(holder.thumbnailImage);
 
         return view;
     }
@@ -85,5 +103,10 @@ public class RRListAdapter extends BaseAdapter {
         private TextView titleView;
         private TextView upDownView;
         private ImageView rankImage;
+        private TextView rankText;
+        private ImageView thumbnailImage;
+        private TextView singerText;
+        private TextView albumTitleText;
+
     }
 }

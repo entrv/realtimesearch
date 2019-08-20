@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.suncaption.realtimesearch" >
+    package="com.suncaption.realtimesearch">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -11,9 +13,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true"
-        >
-        <activity android:name=".MainActivity"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".SiteCheckActivity"
+            android:theme="@style/AppTheme"
+            ></activity>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-8297558424373117~4321514980" />
+
+        <activity
+            android:name=".MainActivity"
             android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,24 +31,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".AddRankWord"
             android:label="@string/notification_name"
             android:parentActivityName=".MainActivity">
-            
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
 
         <service android:name=".RRBackgroundService" />
-        <receiver android:name=".RRAlarmReceiver" />
 
+        <receiver android:name=".RRAlarmReceiver" />
         <receiver
             android:name=".WidgetProvider"
-            android:label="위젯실시간검색어"
-            >
+            android:label="위젯실시간음악순위">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -47,8 +54,6 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_provider_info" />
         </receiver>
-
-
     </application>
 
 </manifest>

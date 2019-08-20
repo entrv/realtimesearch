@@ -10,6 +10,33 @@ public class RRListItem {
     private Drawable upDownImg;
     private String url;
     private String urlChart;
+    private String singer;
+    private String thumbnail;
+    private String albumTitle;
+
+    public String getAlbumTitle() {
+        return albumTitle;
+    }
+
+    public void setAlbumTitle(String albumTitle) {
+        this.albumTitle = albumTitle;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public String getSinger() {
+        return singer;
+    }
+
+    public void setSinger(String singer) {
+        this.singer = singer;
+    }
 
     public String getRank() { return rank;    }
 

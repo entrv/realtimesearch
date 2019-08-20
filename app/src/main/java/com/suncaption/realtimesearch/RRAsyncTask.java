@@ -1,5 +1,6 @@
 package com.suncaption.realtimesearch;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -8,8 +9,10 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -31,6 +34,13 @@ import java.util.Map;
 public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
     public static final String NAVER_SITE = "N";
     public static final String DAUM_SITE = "D";
+    public static final String MELON_SITE = "M";
+    public static final String MNET_SITE = "T";
+    public static final String BUGS_SITE = "B";
+
+    public static final String  GENIE_SITE= "G";
+    public static final String SORIBADA_SITE = "S";
+
     private static final int FROM_WIDGET = 0;
     private static final int FROM_APPLICATION = 1;
     private static final int FROM_SERVICE = 2;
@@ -47,7 +57,7 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
 
     //http parsing
     private int fromWhere;
-    private ArrayList<RRListItem> naverArr, daumArr;
+    private ArrayList<RRListItem> naverArr, daumArr, melonArr,mnetArr,soribadaArr,genieArr,bugsArr;
 
     //service
     private Map<String, ?> taskEntry;
@@ -62,6 +72,12 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
         this.fromWhere = FROM_WIDGET;
         this.naverArr = new ArrayList<>();
         this.daumArr = new ArrayList<>();
+        this.melonArr = new ArrayList<>();
+        this.mnetArr = new ArrayList<>();
+        this.soribadaArr = new ArrayList<>();
+        this.genieArr = new ArrayList<>();
+        this.bugsArr = new ArrayList<>();
+
     }
 
     public RRAsyncTask(Context context, RRListAdapter adapter, String site, AsyncTaskCallBack callBack){
@@ -72,6 +88,11 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
         this.fromWhere = FROM_APPLICATION;
         this.naverArr = new ArrayList<>();
         this.daumArr = new ArrayList<>();
+        this.melonArr = new ArrayList<>();
+        this.mnetArr = new ArrayList<>();
+        this.soribadaArr = new ArrayList<>();
+        this.genieArr = new ArrayList<>();
+        this.bugsArr = new ArrayList<>();
         this.callBack = callBack;
     }
 
@@ -82,6 +103,11 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
         this.fromWhere = FROM_SERVICE;
         this.naverArr = new ArrayList<>();
         this.daumArr = new ArrayList<>();
+        this.melonArr = new ArrayList<>();
+        this.mnetArr = new ArrayList<>();
+        this.soribadaArr = new ArrayList<>();
+        this.genieArr = new ArrayList<>();
+        this.bugsArr = new ArrayList<>();
     }
 
     private boolean isConnected() {
@@ -99,8 +125,11 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
             if (fromWhere == FROM_APPLICATION) {
                 getRealRank(taskSite);
             } else {
-                getRealRank(NAVER_SITE);
-                getRealRank(DAUM_SITE);
+
+                getRealRank(MELON_SITE);
+                getRealRank(MNET_SITE);
+                getRealRank(GENIE_SITE);
+                getRealRank(BUGS_SITE);
             }
         }
         return null;
@@ -111,31 +140,85 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
         super.onPostExecute(aVoid);
         if(isConnected()) {
             if (fromWhere == FROM_WIDGET) {
-                Log.d("entrv", "WIDGET_ROW: " + "start===" + naverArr.size() +"==="+ daumArr.size());
-                if (naverArr.size() > 0 && daumArr.size() > 0) {
-                    RemoteViews updateViews = new RemoteViews(taskContext.getPackageName(),
-                            R.layout.widget_layout);
-                    Log.d("entrv", "WIDGET_ROW: " + WIDGET_ROW);
-                    for (int i = 0; i < WIDGET_ROW; i++) {
-                        Log.d("entrv", "naverArr.get(i).getTitle(): " + naverArr.get(i).getTitle());
-                        Log.d("entrv", "naverArr.get(i).getTitle(): " + daumArr.get(i).getTitle());
 
+                int site_rec = 0;
+                ArrayList<RRListItem> arr_first = null;
+                SharedPreferences preferences =  taskContext.getSharedPreferences("siteCheck", Activity.MODE_PRIVATE);
+                Map<String, ?> memoryMap = preferences.getAll();
+                int logo_int = 1;
+                for (Map.Entry<String,?> entry : memoryMap.entrySet()) {
 
-                        updateViews.setTextViewText(taskContext.getResources().getIdentifier(
-                                "naverTV" + (i + 1)
-                                ,"id"
-                                , taskContext.getPackageName())
-                                , naverArr.get(i).getTitle());
-                        updateViews.setTextViewText(taskContext.getResources().getIdentifier(
-                                "daumTV" + (i + 1)
-                                ,"id"
-                                , taskContext.getPackageName())
-                                , daumArr.get(i).getTitle());
+                    //addMemoryRows(entry.getValue().toString());
+                    Log.d("entrv", "onCreate: " + entry.getValue().toString());
+                    if (entry.getValue().toString().equals("멜론")) {
+                        site_rec = R.drawable.melon_rec;
+                        arr_first = melonArr;
                     }
-                    taskAppWidgetManager.updateAppWidget(taskAppWidgetId, updateViews);
+                    if (entry.getValue().toString().equals("엠넷")) {
+                        site_rec = R.drawable.mnet_rec;
+                        arr_first = mnetArr;
+                    }
+                    if (entry.getValue().toString().equals("지니뮤직")) {
+                        site_rec = R.drawable.genie_rec;
+                        arr_first = genieArr;
+                    }
+                    if (entry.getValue().toString().equals("벅스")) {
+                        site_rec = R.drawable.bugs_rec;
+                        arr_first = bugsArr;
+                    }
+
+                    Log.d("entrv", "WIDGET_ROW: " + "start===" + arr_first.size() );
+                    if (arr_first.size() > 0) {
+                        RemoteViews updateViews = new RemoteViews(taskContext.getPackageName(),
+                                R.layout.widget_layout);
+                        Log.d("entrv", "WIDGET_ROW: " + WIDGET_ROW);
+                        updateViews.setImageViewResource(taskContext.getResources().getIdentifier(
+                                "logo_" + logo_int
+                                , "id"
+                                , taskContext.getPackageName()),
+                                site_rec);
+
+                        String update_id_name= "";
+                        if (logo_int == 1 ) {
+                            update_id_name = "naverTV";
+                        }
+                        if (logo_int == 2 ) {
+                            update_id_name = "daumTV";
+                        }
+                        for (int i = 0; i < WIDGET_ROW; i++) {
+                            Log.d("entrv", "naverArr.get(i).getTitle(): " + entry.getValue().toString() +
+                                    ">>>"+ arr_first.get(i).getTitle());
+                            //Log.d("entrv", "naverArr.get(i).getTitle(): " + mnetArr.get(i).getTitle());
+
+
+                            updateViews.setTextViewText(taskContext.getResources().getIdentifier(
+                                    update_id_name + (i + 1)
+                                    , "id"
+                                    , taskContext.getPackageName())
+                                    , arr_first.get(i).getTitle());
+
+                        }
+                        taskAppWidgetManager.updateAppWidget(taskAppWidgetId, updateViews);
+                    }
+                    logo_int++;
                 }
             } else if (fromWhere == FROM_APPLICATION){
-                ArrayList<RRListItem> arr = (taskSite.equalsIgnoreCase(NAVER_SITE) ? naverArr : daumArr);
+                ArrayList<RRListItem> arr = null;
+                if (taskSite.equalsIgnoreCase(MELON_SITE)) {
+                    arr = melonArr;
+                }
+                if (taskSite.equalsIgnoreCase(MNET_SITE)) {
+                    arr = mnetArr;
+                }
+                if (taskSite.equalsIgnoreCase(SORIBADA_SITE)) {
+                    arr = soribadaArr;
+                }
+                if (taskSite.equalsIgnoreCase(GENIE_SITE)) {
+                    arr = genieArr;
+                }
+                if (taskSite.equalsIgnoreCase(BUGS_SITE)) {
+                    arr = bugsArr;
+                }
                 if (arr.size() > 0) {
                     taskAdapter.getListItemList().clear();
                     for (int i = 0; i < arr.size(); i++) {
@@ -156,10 +239,16 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
                 //check and call notification
                 StringBuilder sb = new StringBuilder();
                 String target = "";
-                for (RRListItem item : naverArr){
+                for (RRListItem item : melonArr){
                     sb.append(item.getTitle().replace(" ","")).append("/");
                 }
-                for (RRListItem item : daumArr){
+                for (RRListItem item : mnetArr){
+                    sb.append(item.getTitle().replace(" ","")).append("/");
+                }
+                for (RRListItem item : bugsArr){
+                    sb.append(item.getTitle().replace(" ","")).append("/");
+                }
+                for (RRListItem item : genieArr){
                     sb.append(item.getTitle().replace(" ","")).append("/");
                 }
                 for (Map.Entry<String,?> entry : taskEntry.entrySet()){
@@ -168,6 +257,7 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
                         break;
                     }
                 }
+
                 if (!"".equalsIgnoreCase(target)){
                     //notification
                     Log.e(MainActivity.TAG,"CALL NOTIFICATION : matching = " + target);
@@ -354,6 +444,705 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
                         daumArr.add(item);
                     }*/
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else if (MELON_SITE.equalsIgnoreCase(whatSite)){
+            melonArr.clear();
+            String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36";
+            try {
+                Document document = Jsoup.connect("https://www.melon.com/chart/index.htm")
+                        .userAgent(userAgent)
+                        .header("Connection", "close")
+                        .header("Accept-Encoding", "identity").get();
+                if (document != null) {
+                    // www.naver.com
+                    // id가 realrank 인 ol 태그 아래 id가 lastrank인 li 태그를 제외한 모든 li 안에 존재하는 a 태그의 내용을 가져옵니다.
+                    // "ol#realrank > li:not(#lastrank) > a"
+                    // 2017.03.27 네이버 개편 : li 태크중 data-order를 가진 하위 a / ah_r / ah_k / ah_icon / ah_s
+                    // 2017.03.29 네이버 챠트 개편 :
+                    //            li[data-order]>a.ah_a : ah_r 랭킹 : ah_k 타이틀 : href 링크
+                    //            li[data-order]>a.ah_da : href 링크
+                    Elements elements = document.select("tr.lst50");
+                    for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+". ");
+                        item.setTitle(elements.get(i).select("div.rank01").text().trim());
+                        //하락.상승,동일
+                        item.setSinger(elements.get(i).select("div.rank02 a").get(0).text().trim());
+                        //item.setUrl(elements.get(i).attr("href"));
+                        item.setUrl("https://www.melon.com");
+                        if ( elements.get(i).select("span.rank_wrap")
+                                .attr("title").contains("신규진입")
+                                || elements.get(i).select("span.rank_wrap")
+                                .attr("title").contains("순위 진입")
+                        ) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        } else if ( elements.get(i).select("span.rank_wrap").attr("title").toString()
+                                .contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_up));
+                        } else if ( elements.get(i).select("span.rank_wrap").attr("title").toString()
+                                .contains("하락")) {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_down));
+                        } else {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        }
+
+                        item.setUpDownCnt(elements.get(i).select("span.rank_wrap").attr("title").toString()
+                        .replace("단계 하락","").replace("단계 상승","").replace("순위 동일",""));
+
+                        item.setThumbnail(elements.get(i).select("a.image_typeAll img").attr("src"));
+                        item.setAlbumTitle(elements.get(i).select("div.rank03 a").text());
+                        melonArr.add(item);
+                    }
+
+
+
+
+
+
+                   /* for (RRListItem print : melonArr){
+                        System.out.println("검색어 : " + print.getTitle());
+                        System.out.println("랭킹 : " + print.getRank());
+                        System.out.println("상승여부 : " + print.getUpDown()); //상승 NEW
+                        System.out.println("상승단계 : " + print.getUpDownCnt());
+                        System.out.println("링크 URL : " + print.getUrl());
+                        System.out.println("차트 URL : " + print.getUrlChart());
+                        System.out.println("------------------------------------------");
+                    }*/
+
+                    /*for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+". ");
+                        item.setTitle(elements.get(i).select("span.ah_k").text());
+                        if (elements.get(i).select("span.ah_icon").text().contains("NEW")) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_new));
+                            item.setUpDownCnt("");
+                        } else if (elements.get(i).select("span.ah_icon").text().contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_up));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        } else {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_down));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        }
+                        item.setUrl(elements.get(i).attr("href"));
+                        naverArr.add(item);
+
+                        *//*System.out.println("검색어 : " + elements.get(i).select("span.ah_k").text());
+                        System.out.println("랭킹 : " + (i + 1));
+                        System.out.println("상승여부 : " + elements.get(i).select("span.ah_icon").text()); //상승 NEW
+                        System.out.println("상승단계 : " + elements.get(i).select("span.ah_s").text());
+                        System.out.println("링크 URL : " + elements.get(i).attr("href"));
+                        System.out.println("------------------------------------------");*//*
+                    }*/
+                }
+
+
+                document = Jsoup.connect("https://www.melon.com/chart/index.htm#params%5Bidx%5D=51")
+                        .userAgent(userAgent)
+                        .header("Connection", "close")
+                        .header("Accept-Encoding", "identity").get();
+                if (document != null) {
+                    // www.naver.com
+                    // id가 realrank 인 ol 태그 아래 id가 lastrank인 li 태그를 제외한 모든 li 안에 존재하는 a 태그의 내용을 가져옵니다.
+                    // "ol#realrank > li:not(#lastrank) > a"
+                    // 2017.03.27 네이버 개편 : li 태크중 data-order를 가진 하위 a / ah_r / ah_k / ah_icon / ah_s
+                    // 2017.03.29 네이버 챠트 개편 :
+                    //            li[data-order]>a.ah_a : ah_r 랭킹 : ah_k 타이틀 : href 링크
+                    //            li[data-order]>a.ah_da : href 링크
+                    Elements elements = document.select("tr.lst100");
+                    for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+50+". ");
+                        item.setTitle(elements.get(i).select("div.rank01").text().trim());
+                        //하락.상승,동일
+                        item.setSinger(elements.get(i).select("div.rank02 a").get(0).text().trim());
+                        //item.setUrl(elements.get(i).attr("href"));
+                        item.setUrl("https://www.melon.com");
+                        if ( elements.get(i).select("span.rank_wrap")
+                                .attr("title").contains("신규진입")
+                            || elements.get(i).select("span.rank_wrap")
+                                .attr("title").contains("순위 진입")
+
+                        ) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        } else if ( elements.get(i).select("span.rank_wrap").attr("title").toString()
+                                .contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_up));
+                        } else if ( elements.get(i).select("span.rank_wrap").attr("title").toString()
+                                .contains("하락")) {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_down));
+                        }else {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        }
+
+                        item.setUpDownCnt(elements.get(i).select("span.rank_wrap").attr("title").toString()
+                                .replace("단계 하락","").replace("단계 상승","")
+                                .replace("순위 동일","")
+                                        .replace("순위 진입","")
+                                );
+
+                        item.setThumbnail(elements.get(i).select("a.image_typeAll img").attr("src"));
+                        item.setAlbumTitle(elements.get(i).select("div.rank03 a").text());
+                        melonArr.add(item);
+                    }
+
+
+
+
+
+
+                   /* for (RRListItem print : melonArr){
+                        System.out.println("검색어 : " + print.getTitle());
+                        System.out.println("랭킹 : " + print.getRank());
+                        System.out.println("상승여부 : " + print.getUpDown()); //상승 NEW
+                        System.out.println("상승단계 : " + print.getUpDownCnt());
+                        System.out.println("링크 URL : " + print.getUrl());
+                        System.out.println("차트 URL : " + print.getUrlChart());
+                        System.out.println("------------------------------------------");
+                    }*/
+
+                    /*for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+". ");
+                        item.setTitle(elements.get(i).select("span.ah_k").text());
+                        if (elements.get(i).select("span.ah_icon").text().contains("NEW")) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_new));
+                            item.setUpDownCnt("");
+                        } else if (elements.get(i).select("span.ah_icon").text().contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_up));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        } else {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_down));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        }
+                        item.setUrl(elements.get(i).attr("href"));
+                        naverArr.add(item);
+
+                        *//*System.out.println("검색어 : " + elements.get(i).select("span.ah_k").text());
+                        System.out.println("랭킹 : " + (i + 1));
+                        System.out.println("상승여부 : " + elements.get(i).select("span.ah_icon").text()); //상승 NEW
+                        System.out.println("상승단계 : " + elements.get(i).select("span.ah_s").text());
+                        System.out.println("링크 URL : " + elements.get(i).attr("href"));
+                        System.out.println("------------------------------------------");*//*
+                    }*/
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else if (MNET_SITE.equalsIgnoreCase(whatSite)){
+            mnetArr.clear();
+            String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36";
+            try {
+                Document document = Jsoup.connect("http://www.mnet.com/chart/TOP100/")
+                        .userAgent(userAgent)
+                        .header("Connection", "close")
+                        .header("Accept-Encoding", "identity").get();
+                if (document != null) {
+                    // www.naver.com
+                    // id가 realrank 인 ol 태그 아래 id가 lastrank인 li 태그를 제외한 모든 li 안에 존재하는 a 태그의 내용을 가져옵니다.
+                    // "ol#realrank > li:not(#lastrank) > a"
+                    // 2017.03.27 네이버 개편 : li 태크중 data-order를 가진 하위 a / ah_r / ah_k / ah_icon / ah_s
+                    // 2017.03.29 네이버 챠트 개편 :
+                    //            li[data-order]>a.ah_a : ah_r 랭킹 : ah_k 타이틀 : href 링크
+                    //            li[data-order]>a.ah_da : href 링크
+                    Elements elements = document.select("table tbody tr");
+                    for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+". ");
+                        item.setTitle(elements.get(i).select("div.MMLITitleSong_Box a").get(1).text().trim());
+                        //하락.상승,동일
+                        item.setSinger(elements.get(i).select("div.MMLITitle_Info a").get(0).text().trim());
+                        //item.setUrl(elements.get(i).attr("href"));
+                        item.setUrl("http://www.mnet.com/chart/TOP100/");
+                        if ( elements.get(i).select("span.MMLI_Updown").text()
+                                .contains("보합")
+
+                        ) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        } else if ( elements.get(i).select("span.MMLI_Updown_Up").text().contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_up));
+                        } else if ( elements.get(i).select("span.MMLI_Updown_Down").text().contains("상승") ) {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_down));
+                        } else {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        }
+
+                        item.setUpDownCnt(elements.get(i).select("span.MMLI_UpdownNum")
+                                .text()
+                                .replace("단계 하락","")
+                                .replace("단계 상승","")
+                                .replace("순위 동일",""));
+
+                        item.setThumbnail(elements.get(i).select("div.MMLITitle_Album a img").attr("src"));
+                        item.setAlbumTitle(elements.get(i).select("a.MMLIInfo_Album").text());
+                        mnetArr.add(item);
+                    }
+
+
+
+
+
+
+                  /*  for (RRListItem print : melonArr){
+                        System.out.println("검색어 : " + print.getTitle());
+                        System.out.println("랭킹 : " + print.getRank());
+                        System.out.println("상승여부 : " + print.getUpDown()); //상승 NEW
+                        System.out.println("상승단계 : " + print.getUpDownCnt());
+                        System.out.println("링크 URL : " + print.getUrl());
+                        System.out.println("차트 URL : " + print.getUrlChart());
+                        System.out.println("------------------------------------------");
+                    }*/
+
+                    /*for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+". ");
+                        item.setTitle(elements.get(i).select("span.ah_k").text());
+                        if (elements.get(i).select("span.ah_icon").text().contains("NEW")) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_new));
+                            item.setUpDownCnt("");
+                        } else if (elements.get(i).select("span.ah_icon").text().contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_up));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        } else {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_down));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        }
+                        item.setUrl(elements.get(i).attr("href"));
+                        naverArr.add(item);
+
+                        *//*System.out.println("검색어 : " + elements.get(i).select("span.ah_k").text());
+                        System.out.println("랭킹 : " + (i + 1));
+                        System.out.println("상승여부 : " + elements.get(i).select("span.ah_icon").text()); //상승 NEW
+                        System.out.println("상승단계 : " + elements.get(i).select("span.ah_s").text());
+                        System.out.println("링크 URL : " + elements.get(i).attr("href"));
+                        System.out.println("------------------------------------------");*//*
+                    }*/
+                }
+
+
+                document = Jsoup.connect("http://www.mnet.com/chart/TOP100/?pNum=2")
+                        .userAgent(userAgent)
+                        .header("Connection", "close")
+                        .header("Accept-Encoding", "identity").get();
+                if (document != null) {
+                    // www.naver.com
+                    // id가 realrank 인 ol 태그 아래 id가 lastrank인 li 태그를 제외한 모든 li 안에 존재하는 a 태그의 내용을 가져옵니다.
+                    // "ol#realrank > li:not(#lastrank) > a"
+                    // 2017.03.27 네이버 개편 : li 태크중 data-order를 가진 하위 a / ah_r / ah_k / ah_icon / ah_s
+                    // 2017.03.29 네이버 챠트 개편 :
+                    //            li[data-order]>a.ah_a : ah_r 랭킹 : ah_k 타이틀 : href 링크
+                    //            li[data-order]>a.ah_da : href 링크
+                    Elements elements = document.select("table tbody tr");
+                    for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1+50)+". ");
+                        item.setTitle(elements.get(i).select("div.MMLITitleSong_Box a").get(1).text().trim());
+                        //하락.상승,동일
+                        item.setSinger(elements.get(i).select("div.MMLITitle_Info a").get(0).text().trim());
+                        //item.setUrl(elements.get(i).attr("href"));
+                        item.setUrl("http://www.mnet.com/chart/TOP100/");
+                        if ( elements.get(i).select("span.MMLI_Updown").text()
+                                .contains("보합")
+
+                        ) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        } else if ( elements.get(i).select("span.MMLI_Updown_Up").text().contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_up));
+                        } else if ( elements.get(i).select("span.MMLI_Updown_Down").text().contains("상승") ) {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_down));
+                        } else {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        }
+
+                        item.setUpDownCnt(elements.get(i).select("span.MMLI_UpdownNum")
+                                .text()
+                                .replace("단계 하락","")
+                                .replace("단계 상승","")
+                                .replace("순위 동일",""));
+
+                        item.setThumbnail(elements.get(i).select("div.MMLITitle_Album a img").attr("src"));
+                        item.setAlbumTitle(elements.get(i).select("a.MMLIInfo_Album").text());
+                        mnetArr.add(item);
+                    }
+
+
+
+
+
+
+                    /*for (RRListItem print : mnetArr){
+                        System.out.println("검색어 : " + print.getTitle());
+                        System.out.println("랭킹 : " + print.getRank());
+                        System.out.println("상승여부 : " + print.getUpDown()); //상승 NEW
+                        System.out.println("상승단계 : " + print.getUpDownCnt());
+                        System.out.println("링크 URL : " + print.getUrl());
+                        System.out.println("차트 URL : " + print.getUrlChart());
+                        System.out.println("------------------------------------------");
+                    }*/
+
+                    /*for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+". ");
+                        item.setTitle(elements.get(i).select("span.ah_k").text());
+                        if (elements.get(i).select("span.ah_icon").text().contains("NEW")) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_new));
+                            item.setUpDownCnt("");
+                        } else if (elements.get(i).select("span.ah_icon").text().contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_up));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        } else {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_down));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        }
+                        item.setUrl(elements.get(i).attr("href"));
+                        naverArr.add(item);
+
+                        *//*System.out.println("검색어 : " + elements.get(i).select("span.ah_k").text());
+                        System.out.println("랭킹 : " + (i + 1));
+                        System.out.println("상승여부 : " + elements.get(i).select("span.ah_icon").text()); //상승 NEW
+                        System.out.println("상승단계 : " + elements.get(i).select("span.ah_s").text());
+                        System.out.println("링크 URL : " + elements.get(i).attr("href"));
+                        System.out.println("------------------------------------------");*//*
+                    }*/
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else if (BUGS_SITE.equalsIgnoreCase(whatSite)){
+            bugsArr.clear();
+            String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36";
+            try {
+                Document document = Jsoup.connect("https://music.bugs.co.kr/chart")
+                        .userAgent(userAgent)
+                        .header("Connection", "close")
+                        .header("Accept-Encoding", "identity").get();
+                if (document != null) {
+                    // www.naver.com
+                    // id가 realrank 인 ol 태그 아래 id가 lastrank인 li 태그를 제외한 모든 li 안에 존재하는 a 태그의 내용을 가져옵니다.
+                    // "ol#realrank > li:not(#lastrank) > a"
+                    // 2017.03.27 네이버 개편 : li 태크중 data-order를 가진 하위 a / ah_r / ah_k / ah_icon / ah_s
+                    // 2017.03.29 네이버 챠트 개편 :
+                    //            li[data-order]>a.ah_a : ah_r 랭킹 : ah_k 타이틀 : href 링크
+                    //            li[data-order]>a.ah_da : href 링크
+                    Elements elements = document.select("table.list tbody tr");
+                    for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+". ");
+                        item.setTitle(elements.get(i).select("p.title a").get(0).text().trim());
+                        //하락.상승,동일
+                        item.setSinger(elements.get(i).select("p.artist a").get(0).text().trim());
+                        //item.setUrl(elements.get(i).attr("href"));
+                        item.setUrl("https://www.bugs.co.kr");
+                        if ( elements.get(i).select("p.none").text()
+                                .contains("변동없음")
+
+                        ) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        } else if ( elements.get(i).select("p.up").text().contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_up));
+                        } else if ( elements.get(i).select("p.down").text().contains("하락") ) {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_down));
+                        } else {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        }
+
+                        item.setUpDownCnt(elements.get(i).select("p.change em")
+                                .text()
+                                .replace("단계 하락","")
+                                .replace("단계 상승","")
+                                .replace("순위 동일",""));
+
+                        item.setThumbnail(elements.get(i).select("td a.thumbnail img").attr("src"));
+                        item.setAlbumTitle(elements.get(i).select("a.album").text());
+
+                        bugsArr.add(item);
+                    }
+
+
+
+
+
+
+                   /* for (RRListItem print : bugsArr){
+                        System.out.println("검색어 : " + print.getTitle());
+                        System.out.println("랭킹 : " + print.getRank());
+                        System.out.println("상승여부 : " + print.getUpDown()); //상승 NEW
+                        System.out.println("상승단계 : " + print.getUpDownCnt());
+                        System.out.println("링크 URL : " + print.getUrl());
+                        System.out.println("차트 URL : " + print.getUrlChart());
+                        System.out.println("------------------------------------------");
+                    }*/
+
+                    /*for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+". ");
+                        item.setTitle(elements.get(i).select("span.ah_k").text());
+                        if (elements.get(i).select("span.ah_icon").text().contains("NEW")) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_new));
+                            item.setUpDownCnt("");
+                        } else if (elements.get(i).select("span.ah_icon").text().contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_up));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        } else {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_down));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        }
+                        item.setUrl(elements.get(i).attr("href"));
+                        naverArr.add(item);
+
+                        *//*System.out.println("검색어 : " + elements.get(i).select("span.ah_k").text());
+                        System.out.println("랭킹 : " + (i + 1));
+                        System.out.println("상승여부 : " + elements.get(i).select("span.ah_icon").text()); //상승 NEW
+                        System.out.println("상승단계 : " + elements.get(i).select("span.ah_s").text());
+                        System.out.println("링크 URL : " + elements.get(i).attr("href"));
+                        System.out.println("------------------------------------------");*//*
+                    }*/
+                }
+
+
+
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else if (GENIE_SITE.equalsIgnoreCase(whatSite)){
+            genieArr.clear();
+            String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36";
+            try {
+                Document document = Jsoup.connect("https://www.genie.co.kr/chart/top200")
+                        .userAgent(userAgent)
+                        .header("Connection", "close")
+                        .header("Accept-Encoding", "identity").get();
+                if (document != null) {
+                    // www.naver.com
+                    // id가 realrank 인 ol 태그 아래 id가 lastrank인 li 태그를 제외한 모든 li 안에 존재하는 a 태그의 내용을 가져옵니다.
+                    // "ol#realrank > li:not(#lastrank) > a"
+                    // 2017.03.27 네이버 개편 : li 태크중 data-order를 가진 하위 a / ah_r / ah_k / ah_icon / ah_s
+                    // 2017.03.29 네이버 챠트 개편 :
+                    //            li[data-order]>a.ah_a : ah_r 랭킹 : ah_k 타이틀 : href 링크
+                    //            li[data-order]>a.ah_da : href 링크
+                    Elements elements = document.select("table.list-wrap tbody tr");
+                    for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+". ");
+                        item.setTitle(elements.get(i).select("a.title").get(0).text().trim());
+                        //하락.상승,동일
+                        item.setSinger(elements.get(i).select("a.artist").get(0).text().trim());
+                        //item.setUrl(elements.get(i).attr("href"));
+                        item.setUrl("https://www.genie.co.kr");
+                        if ( elements.get(i).select("span.rank-none").text()
+                                .contains("유지")
+
+                        ) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        } else if ( elements.get(i).select("span.rank-up").text().contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_up));
+                        } else if ( elements.get(i).select("span.rank-down").text().contains("하강") ) {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_down));
+                        } else {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        }
+
+                        item.setUpDownCnt(elements.get(i).select("span.rank").get(1)
+                                .text()
+                                .replace("하강","")
+                                .replace("상승","")
+                                .replace("유지",""));
+
+                        item.setThumbnail("http:/" +
+                                elements.get(i).select("td a.cover img")
+                                        .attr("src"));
+                        item.setAlbumTitle(elements.get(i).select("a.albumtitle").text());
+
+                        genieArr.add(item);
+                    }
+
+
+
+
+
+
+                   /* for (RRListItem print : genieArr){
+                        System.out.println("검색어 : " + print.getTitle());
+                        System.out.println("랭킹 : " + print.getRank());
+                        System.out.println("상승여부 : " + print.getUpDown()); //상승 NEW
+                        System.out.println("상승단계 : " + print.getUpDownCnt());
+                        System.out.println("링크 URL : " + print.getUrl());
+                        System.out.println("차트 URL : " + print.getUrlChart());
+                        System.out.println("------------------------------------------");
+                    }*/
+
+                    /*for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+". ");
+                        item.setTitle(elements.get(i).select("span.ah_k").text());
+                        if (elements.get(i).select("span.ah_icon").text().contains("NEW")) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_new));
+                            item.setUpDownCnt("");
+                        } else if (elements.get(i).select("span.ah_icon").text().contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_up));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        } else {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_down));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        }
+                        item.setUrl(elements.get(i).attr("href"));
+                        naverArr.add(item);
+
+                        *//*System.out.println("검색어 : " + elements.get(i).select("span.ah_k").text());
+                        System.out.println("랭킹 : " + (i + 1));
+                        System.out.println("상승여부 : " + elements.get(i).select("span.ah_icon").text()); //상승 NEW
+                        System.out.println("상승단계 : " + elements.get(i).select("span.ah_s").text());
+                        System.out.println("링크 URL : " + elements.get(i).attr("href"));
+                        System.out.println("------------------------------------------");*//*
+                    }*/
+                }
+
+                document = Jsoup.connect("https://www.genie.co.kr/chart/top200?&rtm=Y&pg=2")
+                        .userAgent(userAgent)
+                        .header("Connection", "close")
+                        .header("Accept-Encoding", "identity").get();
+                if (document != null) {
+                    // www.naver.com
+                    // id가 realrank 인 ol 태그 아래 id가 lastrank인 li 태그를 제외한 모든 li 안에 존재하는 a 태그의 내용을 가져옵니다.
+                    // "ol#realrank > li:not(#lastrank) > a"
+                    // 2017.03.27 네이버 개편 : li 태크중 data-order를 가진 하위 a / ah_r / ah_k / ah_icon / ah_s
+                    // 2017.03.29 네이버 챠트 개편 :
+                    //            li[data-order]>a.ah_a : ah_r 랭킹 : ah_k 타이틀 : href 링크
+                    //            li[data-order]>a.ah_da : href 링크
+                    Elements elements = document.select("table.list-wrap tbody tr");
+                    for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1+50)+". ");
+                        item.setTitle(elements.get(i).select("a.title").get(0).text().trim());
+                        //하락.상승,동일
+                        item.setSinger(elements.get(i).select("a.artist").get(0).text().trim());
+                        //item.setUrl(elements.get(i).attr("href"));
+                        item.setUrl("https://www.genie.co.kr");
+                        if ( elements.get(i).select("span.rank-none").text()
+                                .contains("유지")
+
+                        ) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        } else if ( elements.get(i).select("span.rank-up").text().contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_up));
+                        } else if ( elements.get(i).select("span.rank-down").text().contains("하강") ) {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_down));
+                        } else {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        }
+
+                        item.setUpDownCnt(elements.get(i).select("span.rank").get(1)
+                                .text()
+                                .replace("하강","")
+                                .replace("상승","")
+                                .replace("유지",""));
+
+                        item.setThumbnail("http:/" +
+                                elements.get(i).select("td a.cover img")
+                                        .attr("src"));
+                        item.setAlbumTitle(elements.get(i).select("a.albumtitle").text());
+                        genieArr.add(item);
+                    }
+
+
+
+
+
+
+                    /*for (RRListItem print : genieArr){
+                        System.out.println("검색어 : " + print.getTitle());
+                        System.out.println("랭킹 : " + print.getRank());
+                        System.out.println("상승여부 : " + print.getUpDown()); //상승 NEW
+                        System.out.println("상승단계 : " + print.getUpDownCnt());
+                        System.out.println("링크 URL : " + print.getUrl());
+                        System.out.println("차트 URL : " + print.getUrlChart());
+                        System.out.println("------------------------------------------");
+                    }*/
+
+                    /*for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+". ");
+                        item.setTitle(elements.get(i).select("span.ah_k").text());
+                        if (elements.get(i).select("span.ah_icon").text().contains("NEW")) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_new));
+                            item.setUpDownCnt("");
+                        } else if (elements.get(i).select("span.ah_icon").text().contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_up));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        } else {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_down));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        }
+                        item.setUrl(elements.get(i).attr("href"));
+                        naverArr.add(item);
+
+                        *//*System.out.println("검색어 : " + elements.get(i).select("span.ah_k").text());
+                        System.out.println("랭킹 : " + (i + 1));
+                        System.out.println("상승여부 : " + elements.get(i).select("span.ah_icon").text()); //상승 NEW
+                        System.out.println("상승단계 : " + elements.get(i).select("span.ah_s").text());
+                        System.out.println("링크 URL : " + elements.get(i).attr("href"));
+                        System.out.println("------------------------------------------");*//*
+                    }*/
+                }
+
+
+
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

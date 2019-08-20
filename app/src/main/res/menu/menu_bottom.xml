@@ -1,20 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
     <item
         android:id="@+id/navigation_menu1"
-        android:icon="@android:drawable/ic_menu_call"
-        android:title="naver" />
+        android:icon="@drawable/letterm"
+        android:title="멜론"
+
+        />
 
     <item
         android:id="@+id/navigation_menu2"
-        android:icon="@android:drawable/ic_menu_camera"
-        android:title="daum" />
-
+        android:icon="@drawable/lettern"
+        android:title="엠넷" />
     <item
         android:id="@+id/navigation_menu3"
+        android:icon="@drawable/letterb"
+        android:title="벅스" />
+    <item
+        android:id="@+id/navigation_menu4"
+        android:icon="@drawable/letterg"
+        android:title="지니" />
+
+
+    <item
+        android:id="@+id/navigation_menu5"
         android:icon="@android:drawable/ic_menu_edit"
-        android:title="추가하기" />
+        android:title="검색어 추가" />
 
 
 

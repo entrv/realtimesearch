@@ -2,12 +2,19 @@ package com.suncaption.realtimesearch;
 
 import android.app.Activity;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 
 import java.util.Map;
 
@@ -22,12 +29,37 @@ public class RRBackgroundService extends Service {
         return null;
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private void startMyOwnForeground(){
+        int NOTIFICATION_ID = (int) (System.currentTimeMillis()%10000);
+        String NOTIFICATION_CHANNEL_ID = "realrankDummy";
+        String channelName = "My Background Service";
+        NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
+        chan.setLightColor(Color.BLUE);
+        chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert manager != null;
+        manager.createNotificationChannel(chan);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+        Notification notification = notificationBuilder.setOngoing(true)
+                .setSmallIcon(R.drawable.rk_chart)
+                .setContentTitle("App is running in background")
+                .setPriority(NotificationManager.IMPORTANCE_MIN)
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .build();
+        startForeground(NOTIFICATION_ID, notification);
+    }
     @Override
     public void onCreate() {
         super.onCreate();
         int NOTIFICATION_ID = (int) (System.currentTimeMillis()%10000);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForeground(NOTIFICATION_ID, new Notification.Builder(this, "realrankDummy").build());
+            startMyOwnForeground();
+        } else {
+
+           // startForeground(NOTIFICATION_ID,
+           //         new Notification.Builder(this, "realrankDummy").build());
         }
         this.isRunning = false;
         this.backgroundThread = new Thread(myTask);
@@ -36,6 +68,8 @@ public class RRBackgroundService extends Service {
             this.backgroundThread.start();
         }
     }
+
+
 
     private Runnable myTask = new Runnable() {
         public void run() {

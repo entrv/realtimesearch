@@ -15,10 +15,11 @@
             android:layout_width="0dp"
             android:layout_height="30dp"
             android:layout_weight="1"
+            android:id="@+id/logo_1"
             android:paddingBottom="@dimen/widget_img_padding_6"
             android:paddingLeft="@dimen/widget_img_padding_8"
             android:paddingTop="@dimen/widget_img_padding_6"
-            android:src="@drawable/naver_rec"/>
+            android:src="@drawable/melon_rec"/>
         <ImageView
             android:layout_width="35dp"
             android:layout_height="wrap_content"
@@ -27,13 +28,14 @@
             android:src="@drawable/refresh"
             android:id="@+id/widget_refresh"/>
         <ImageView
+            android:id="@+id/logo_2"
             android:layout_width="0dp"
             android:layout_height="30dp"
             android:layout_weight="1"
             android:paddingBottom="@dimen/widget_img_padding_6"
             android:paddingRight="@dimen/widget_img_padding_8"
             android:paddingTop="@dimen/widget_img_padding_6"
-            android:src="@drawable/daum_rec" />
+            android:src="@drawable/mnet_rec" />
     </LinearLayout>
     <LinearLayout
         android:id="@+id/widget_body"

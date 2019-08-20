@@ -1,18 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_row_selector"
+    android:padding="8dp" >
+
+    <TextView
+        android:id="@+id/item_rank"
+        android:layout_width="30dp"
+        android:layout_height="50dp"
+        android:text="100"
+        android:textSize="@dimen/item_rank"
+        android:textStyle="bold"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:gravity="center"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
+        />
+    <ImageView
+        android:id="@+id/item_img"
+        android:layout_width="14dp"
+        android:layout_height="50dp"
+
+
+
+        android:src="@drawable/rank_down"
+        android:layout_alignTop="@+id/item_rank"
+        android:layout_toRightOf="@+id/item_rank"
+        />
+    <TextView
+        android:id="@+id/item_updown"
+        android:layout_width="24dp"
+        android:layout_height="50dp"
+
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+       android:text="110"
+        android:layout_alignTop="@+id/item_img"
+        android:layout_toRightOf="@+id/item_img"
+        />
+    <!-- Thumbnail Image -->
+    <ImageView
+        android:id="@+id/item_thumbnail"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
+
+        android:src="@drawable/letter1"
+        android:layout_alignTop="@+id/item_updown"
+        android:layout_toRightOf="@+id/item_updown"
+        />
+
+    <!-- Movie Title -->
+    <TextView
+        android:id="@+id/item_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/item_thumbnail"
+        android:layout_toRightOf="@+id/item_thumbnail"
+        android:textSize="@dimen/title"
+        android:textStyle="bold"
+        android:text="sing name is good "
+        />
+
+    <!-- Rating -->
+    <TextView
+        android:id="@+id/item_singer"
+        android:text="singer_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/rating"
+        android:layout_toRightOf="@+id/item_thumbnail"
+        android:layout_alignLeft="@+id/item_text"
+        android:layout_alignStart="@+id/item_text"
+        android:layout_below="@+id/item_text" />
+    <TextView
+        android:id="@+id/item_albumtitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/item_thumbnail"
+        android:textColor="@color/genre"
+        android:textSize="@dimen/genre"
+        android:layout_below="@+id/item_singer"
+        android:text="album_title"
+         />
+
+
+</RelativeLayout>
+<!--
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="4"
+        android:orientation="vertical" >
     <TextView
         android:id="@+id/item_text"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="@dimen/list_text_height"
         android:layout_marginLeft="@dimen/widget_margin"
-        android:layout_weight="3"
+        android:layout_weight="4"
         android:gravity="center_vertical"
         android:text="SAMPLE"
         android:textSize="@dimen/list_title_sp"
         android:textStyle="normal|bold" />
+        <TextView
+            android:id="@+id/item_singer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="File details"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </LinearLayout>
     <TextView
         android:id="@+id/item_updown"
         android:layout_width="0dp"
@@ -24,8 +130,8 @@
     <ImageView
         android:layout_width="@dimen/list_img_size"
         android:layout_height="@dimen/list_img_size"
-        android:layout_weight="1"
+
         android:layout_gravity="center_vertical"
         android:id="@+id/item_img"/>
 
-</LinearLayout>
+</LinearLayout>-->
