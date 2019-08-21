@@ -7,6 +7,21 @@
         android:orderInCategory="100"
         android:title="@string/action_site_choice"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_site_soribada"
+        android:orderInCategory="100"
+        android:title="소리바다"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_site_billboard"
+        android:orderInCategory="100"
+        android:title="빌보드"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_site_flo"
+        android:orderInCategory="100"
+        android:title="플로"
+        app:showAsAction="never"/>
 
 
 

@@ -43,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
     private MnetFragment mnetFragment = new MnetFragment();
     private BugsFragment bugsFragment = new BugsFragment();
     private GenieFragment genieFragment = new GenieFragment();
+    private SoribadaFragment soribadaFragment = new SoribadaFragment();
+    private BillboardFragment billboardFragment = new BillboardFragment();
+    private FloFragment floFragment = new FloFragment();
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -60,6 +64,24 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_site_choice) {
             Intent sitecheck_intent = new Intent(getApplicationContext(), SiteCheckActivity.class);
             startActivity(sitecheck_intent);
+            return true;
+        }
+        if (id == R.id.action_site_soribada) {
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.frame_layout, soribadaFragment).commitAllowingStateLoss();
+
+            return true;
+        }
+        if (id == R.id.action_site_billboard) {
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.frame_layout, billboardFragment).commitAllowingStateLoss();
+
+            return true;
+        }
+        if (id == R.id.action_site_flo) {
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.frame_layout, floFragment).commitAllowingStateLoss();
+
             return true;
         }
 

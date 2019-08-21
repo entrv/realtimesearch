@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
+
     >
 
 
@@ -17,6 +18,7 @@
         android:elevation="4dp"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+
         >
 
         <!-- Toolbar -->
@@ -37,7 +39,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="110dp"
-        android:layout_marginTop="55dp"/>
+
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
@@ -57,7 +61,9 @@
         android:layout_gravity="bottom"
         android:background="?android:attr/windowBackground"
         app:menu="@menu/menu_bottom"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="55dp"
+        app:labelVisibilityMode="selected"
+        app:layout_behavior="com.suncaption.realtimesearch.BottomNavigationBehavior"
         />
 
 

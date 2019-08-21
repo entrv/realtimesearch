@@ -23,11 +23,14 @@ import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.security.spec.ECField;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -40,6 +43,8 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
 
     public static final String  GENIE_SITE= "G";
     public static final String SORIBADA_SITE = "S";
+    public static final String BILLBOARD_SITE = "I";
+    public static final String FLO_SITE = "F";
 
     private static final int FROM_WIDGET = 0;
     private static final int FROM_APPLICATION = 1;
@@ -57,7 +62,7 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
 
     //http parsing
     private int fromWhere;
-    private ArrayList<RRListItem> naverArr, daumArr, melonArr,mnetArr,soribadaArr,genieArr,bugsArr;
+    private ArrayList<RRListItem> naverArr, daumArr, melonArr,mnetArr,soribadaArr,genieArr,bugsArr,billboardArr,floArr;
 
     //service
     private Map<String, ?> taskEntry;
@@ -77,6 +82,8 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
         this.soribadaArr = new ArrayList<>();
         this.genieArr = new ArrayList<>();
         this.bugsArr = new ArrayList<>();
+        this.billboardArr = new ArrayList<>();
+        this.floArr = new ArrayList<>();
 
     }
 
@@ -93,6 +100,8 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
         this.soribadaArr = new ArrayList<>();
         this.genieArr = new ArrayList<>();
         this.bugsArr = new ArrayList<>();
+        this.billboardArr = new ArrayList<>();
+        this.floArr = new ArrayList<>();
         this.callBack = callBack;
     }
 
@@ -108,6 +117,8 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
         this.soribadaArr = new ArrayList<>();
         this.genieArr = new ArrayList<>();
         this.bugsArr = new ArrayList<>();
+        this.billboardArr = new ArrayList<>();
+        this.floArr = new ArrayList<>();
     }
 
     private boolean isConnected() {
@@ -219,6 +230,13 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
                 if (taskSite.equalsIgnoreCase(BUGS_SITE)) {
                     arr = bugsArr;
                 }
+                if (taskSite.equalsIgnoreCase(BILLBOARD_SITE)) {
+                    arr = billboardArr;
+                }
+                if (taskSite.equalsIgnoreCase(FLO_SITE)) {
+                    arr = floArr;
+                }
+
                 if (arr.size() > 0) {
                     taskAdapter.getListItemList().clear();
                     for (int i = 0; i < arr.size(); i++) {
@@ -249,6 +267,12 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
                     sb.append(item.getTitle().replace(" ","")).append("/");
                 }
                 for (RRListItem item : genieArr){
+                    sb.append(item.getTitle().replace(" ","")).append("/");
+                }
+                for (RRListItem item : billboardArr){
+                    sb.append(item.getTitle().replace(" ","")).append("/");
+                }
+                for (RRListItem item : floArr){
                     sb.append(item.getTitle().replace(" ","")).append("/");
                 }
                 for (Map.Entry<String,?> entry : taskEntry.entrySet()){
@@ -1139,6 +1163,409 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
                         System.out.println("------------------------------------------");*//*
                     }*/
                 }
+
+
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else if (SORIBADA_SITE.equalsIgnoreCase(whatSite)){
+            soribadaArr.clear();
+            Log.d("entrv", "getRealRank: ");
+            String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36";
+            try {
+                Document document = Jsoup.connect("http://sbapi.soribada.com/charts/songs/realtime/json/?callback=&page=1&size=100&vid=0&version=2.5&device=web&favorite=true&cachetype=charts_songs_realtime&authKey=")
+                        .userAgent(userAgent)
+                        .header("Connection", "close")
+                        .header("Accept-Encoding", "identity")
+                        .ignoreContentType(true)
+                        .get();
+                if (document != null) {
+                    try {
+
+                        JSONObject jsonObject = new JSONObject(document.text());
+                        JSONObject jsonObject2 = jsonObject.getJSONObject("SoribadaApiResponse");
+                        JSONObject jsonObject3 = jsonObject2.getJSONObject("Songs");
+                        JSONArray items = jsonObject3.getJSONArray("Song");
+                        Log.d("enrv", "items.length(): " + items.length());
+                        for(int i=0; i<items.length(); i++) {
+                            JSONObject item_object = (JSONObject) items.get(i);
+                            String songTitle = item_object.getString("Name");
+                            JSONObject Artists =(JSONObject) item_object.get("Artists");
+                            JSONArray Artists2 =(((JSONArray) Artists.get("Artist")));
+
+
+                            String songSinger =  (String) ((JSONObject)Artists2.get(0)).get("Name");
+
+                            String songUpDown =  item_object.getString("PreRank");
+
+
+
+                            JSONObject album =(JSONObject) item_object.get("Album");
+                            String songAlbumTitle = (String) album.get("Name") ;
+
+                            JSONObject Pictures =(JSONObject) album.get("Pictures");
+                            JSONArray album_thumb =(((JSONArray) Pictures.get("Picture")));
+                            JSONObject album_thumb2 =(JSONObject) album_thumb.get(1);
+                            String songThumbnail = (String) album_thumb2.get("URL");
+
+                            //String item2 = (String) (((JSONArray) items.get(i)).get(0));
+                            Log.d("enrv", "getRealRank: " + songThumbnail + "" + songAlbumTitle);
+
+                            item = new RRListItem();
+                            item.setRank((i+1)+". ");
+                            item.setTitle(songTitle.trim());
+                            //하락.상승,동일
+                            item.setSinger(songSinger.trim());
+                            //item.setUrl(elements.get(i).attr("href"));
+                            item.setUrl("http://www.soriba.com");
+
+                            if (Integer.parseInt(songUpDown) == 0) {
+                                item.setUpDown(0);
+                                item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                            } else if (Integer.parseInt(songUpDown) > 0) {
+                                item.setUpDown(1);
+                                item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_up));
+                            } else  if (Integer.parseInt(songUpDown) < 0) {
+                                item.setUpDown(-1);
+                                item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_down));
+                            } else {
+                                item.setUpDown(0);
+                                item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                            }
+
+
+
+                            item.setUpDownCnt(songUpDown);
+
+                            item.setThumbnail(
+                                    songThumbnail);
+                            item.setAlbumTitle(songAlbumTitle);
+
+                            soribadaArr.add(item);
+                        }
+
+
+                    } catch (Throwable t) {
+                        Log.e("My App", "Could not parse malformed JSON: \"" + document.text() + "\"");
+                    }
+                    // www.naver.com
+                    // id가 realrank 인 ol 태그 아래 id가 lastrank인 li 태그를 제외한 모든 li 안에 존재하는 a 태그의 내용을 가져옵니다.
+                    // "ol#realrank > li:not(#lastrank) > a"
+                    // 2017.03.27 네이버 개편 : li 태크중 data-order를 가진 하위 a / ah_r / ah_k / ah_icon / ah_s
+                    // 2017.03.29 네이버 챠트 개편 :
+                    //            li[data-order]>a.ah_a : ah_r 랭킹 : ah_k 타이틀 : href 링크
+                    //            li[data-order]>a.ah_da : href 링크
+                    /*Elements elements = document.select("ul.music-list");
+                    for (int i = 0; i < elements.size(); i++) {
+
+                    }*/
+
+
+
+
+
+
+                    for (RRListItem print : soribadaArr){
+                        System.out.println("검색어 : " + print.getTitle());
+                        System.out.println("랭킹 : " + print.getRank());
+                        System.out.println("상승여부 : " + print.getUpDown()); //상승 NEW
+                        System.out.println("상승단계 : " + print.getUpDownCnt());
+                        System.out.println("링크 URL : " + print.getUrl());
+                        System.out.println("차트 URL : " + print.getUrlChart());
+                        System.out.println("------------------------------------------");
+                    }
+
+                    /*for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+". ");
+                        item.setTitle(elements.get(i).select("span.ah_k").text());
+                        if (elements.get(i).select("span.ah_icon").text().contains("NEW")) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_new));
+                            item.setUpDownCnt("");
+                        } else if (elements.get(i).select("span.ah_icon").text().contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_up));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        } else {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_down));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        }
+                        item.setUrl(elements.get(i).attr("href"));
+                        naverArr.add(item);
+
+                        *//*System.out.println("검색어 : " + elements.get(i).select("span.ah_k").text());
+                        System.out.println("랭킹 : " + (i + 1));
+                        System.out.println("상승여부 : " + elements.get(i).select("span.ah_icon").text()); //상승 NEW
+                        System.out.println("상승단계 : " + elements.get(i).select("span.ah_s").text());
+                        System.out.println("링크 URL : " + elements.get(i).attr("href"));
+                        System.out.println("------------------------------------------");*//*
+                    }*/
+                }
+
+
+
+
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else if (BILLBOARD_SITE.equalsIgnoreCase(whatSite)){
+            billboardArr.clear();
+            String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36";
+            try {
+                Document document = Jsoup.connect("https://www.billboard.com/charts/hot-100")
+                        .userAgent(userAgent)
+                        .header("Connection", "close")
+                        .header("Accept-Encoding", "identity").get();
+                if (document != null) {
+                    // www.naver.com
+                    // id가 realrank 인 ol 태그 아래 id가 lastrank인 li 태그를 제외한 모든 li 안에 존재하는 a 태그의 내용을 가져옵니다.
+                    // "ol#realrank > li:not(#lastrank) > a"
+                    // 2017.03.27 네이버 개편 : li 태크중 data-order를 가진 하위 a / ah_r / ah_k / ah_icon / ah_s
+                    // 2017.03.29 네이버 챠트 개편 :
+                    //            li[data-order]>a.ah_a : ah_r 랭킹 : ah_k 타이틀 : href 링크
+                    //            li[data-order]>a.ah_da : href 링크
+                    Elements elements = document.select("div.chart-list-item");
+                    for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+". ");
+                        item.setTitle(elements.get(i).select("span.chart-list-item__title-text").get(0).text().trim());
+                        //하락.상승,동일
+                        item.setSinger(elements.get(i).select("div.chart-list-item__artist").get(0).text().trim());
+                        //item.setUrl(elements.get(i).attr("href"));
+                        item.setUrl("https://www.billboard.com/charts/hot-100");
+                        String last_week = elements.get(i).select("div.chart-list-item__last-week").get(0).text().trim();
+                        last_week = last_week.replace("-","");
+                        if (last_week.equals("")) {
+                            last_week = "0";
+                        }
+                        int upDown = Integer.parseInt(last_week) - (i+1);
+                        int upDownCnt = upDown;
+                        if (upDownCnt < 0 ) {
+                            upDownCnt = upDownCnt * -1;
+                        }
+                        if (upDown == 0) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        } else if (upDown > 0) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_up));
+                        } else if (upDown < 0) {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_down));
+                        } else {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                        }
+
+
+                        item.setUpDownCnt(String.valueOf(upDownCnt));
+
+                        item.setThumbnail(
+                                elements.get(i).select("div.chart-list-item__image-wrapper img")
+                                        .attr("data-src"));
+                        item.setAlbumTitle("");
+
+                        billboardArr.add(item);
+                    }
+
+
+
+
+
+
+                   /* for (RRListItem print : genieArr){
+                        System.out.println("검색어 : " + print.getTitle());
+                        System.out.println("랭킹 : " + print.getRank());
+                        System.out.println("상승여부 : " + print.getUpDown()); //상승 NEW
+                        System.out.println("상승단계 : " + print.getUpDownCnt());
+                        System.out.println("링크 URL : " + print.getUrl());
+                        System.out.println("차트 URL : " + print.getUrlChart());
+                        System.out.println("------------------------------------------");
+                    }*/
+
+                    /*for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+". ");
+                        item.setTitle(elements.get(i).select("span.ah_k").text());
+                        if (elements.get(i).select("span.ah_icon").text().contains("NEW")) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_new));
+                            item.setUpDownCnt("");
+                        } else if (elements.get(i).select("span.ah_icon").text().contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_up));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        } else {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_down));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        }
+                        item.setUrl(elements.get(i).attr("href"));
+                        naverArr.add(item);
+
+                        *//*System.out.println("검색어 : " + elements.get(i).select("span.ah_k").text());
+                        System.out.println("랭킹 : " + (i + 1));
+                        System.out.println("상승여부 : " + elements.get(i).select("span.ah_icon").text()); //상승 NEW
+                        System.out.println("상승단계 : " + elements.get(i).select("span.ah_s").text());
+                        System.out.println("링크 URL : " + elements.get(i).attr("href"));
+                        System.out.println("------------------------------------------");*//*
+                    }*/
+                }
+
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        else if (FLO_SITE.equalsIgnoreCase(whatSite)) {
+            floArr.clear();
+            Log.d("entrv", "getRealRank: ");
+            String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36";
+            try {
+                Document document = Jsoup.connect("https://music-flo.com/api/meta/v1/chart/track/1")
+                        .userAgent(userAgent)
+                        .header("Connection", "close")
+                        .header("Accept-Encoding", "identity")
+                        .ignoreContentType(true)
+                        .get();
+                if (document != null) {
+                    try {
+
+                        JSONObject jsonObject = new JSONObject(document.text());
+                        JSONObject jsonObject2 = jsonObject.getJSONObject("data");
+
+                        JSONArray items = jsonObject2.getJSONArray("trackList");
+                        Log.d("enrv", "items.length(): " + items.length());
+                        for(int i=0; i<items.length(); i++) {
+                            JSONObject item_object = (JSONObject) items.get(i);
+                            String songTitle = item_object.getString("name");
+
+                            JSONArray Artists2 =(((JSONArray) item_object.get("artistList")));
+
+
+                            String songSinger =  (String) ((JSONObject)Artists2.get(0)).get("name");
+
+                            //String songUpDown =  (String) ((JSONObject)item_object.get("rank")).get("rankBadge");
+
+                            int songUpDown_int = (int) ((JSONObject)item_object.get("rank")).get("rankBadge");
+                            String songUpDown =  String.valueOf(songUpDown_int);
+                            JSONObject album =(JSONObject) item_object.get("album");
+                            String songAlbumTitle = (String) album.get("title") ;
+
+
+                            JSONArray album_thumb =(((JSONArray) album.get("imgList")));
+                            JSONObject album_thumb2 =(JSONObject) album_thumb.get(0);
+                            String songThumbnail = (String) album_thumb2.get("url");
+
+                            //String item2 = (String) (((JSONArray) items.get(i)).get(0));
+                            Log.d("enrv", "getRealRank: " + songThumbnail + "" + songAlbumTitle);
+
+                            item = new RRListItem();
+                            item.setRank((i+1)+". ");
+                            item.setTitle(songTitle.trim());
+                            //하락.상승,동일
+                            item.setSinger(songSinger.trim());
+                            //item.setUrl(elements.get(i).attr("href"));
+                            item.setUrl("http://www.soriba.com");
+
+                            if (Integer.parseInt(songUpDown) == 0) {
+                                item.setUpDown(0);
+                                item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                            } else if (Integer.parseInt(songUpDown) > 0) {
+                                item.setUpDown(1);
+                                item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_up));
+                            } else  if (Integer.parseInt(songUpDown) < 0) {
+                                item.setUpDown(-1);
+                                item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_down));
+                            } else {
+                                item.setUpDown(0);
+                                item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rank_bar));
+                            }
+
+
+
+                            item.setUpDownCnt(songUpDown);
+
+                            item.setThumbnail(
+                                    songThumbnail);
+                            item.setAlbumTitle(songAlbumTitle);
+
+                            floArr.add(item);
+                        }
+
+
+                    } catch (Throwable t) {
+                        Log.e("My App", "Could not parse malformed JSON: \"" + document.text() + "\"");
+                    }
+                    // www.naver.com
+                    // id가 realrank 인 ol 태그 아래 id가 lastrank인 li 태그를 제외한 모든 li 안에 존재하는 a 태그의 내용을 가져옵니다.
+                    // "ol#realrank > li:not(#lastrank) > a"
+                    // 2017.03.27 네이버 개편 : li 태크중 data-order를 가진 하위 a / ah_r / ah_k / ah_icon / ah_s
+                    // 2017.03.29 네이버 챠트 개편 :
+                    //            li[data-order]>a.ah_a : ah_r 랭킹 : ah_k 타이틀 : href 링크
+                    //            li[data-order]>a.ah_da : href 링크
+                    /*Elements elements = document.select("ul.music-list");
+                    for (int i = 0; i < elements.size(); i++) {
+
+                    }*/
+
+
+
+
+
+
+                    for (RRListItem print : soribadaArr){
+                        System.out.println("검색어 : " + print.getTitle());
+                        System.out.println("랭킹 : " + print.getRank());
+                        System.out.println("상승여부 : " + print.getUpDown()); //상승 NEW
+                        System.out.println("상승단계 : " + print.getUpDownCnt());
+                        System.out.println("링크 URL : " + print.getUrl());
+                        System.out.println("차트 URL : " + print.getUrlChart());
+                        System.out.println("------------------------------------------");
+                    }
+
+                    /*for (int i = 0; i < elements.size(); i++) {
+                        item = new RRListItem();
+                        item.setRank((i+1)+". ");
+                        item.setTitle(elements.get(i).select("span.ah_k").text());
+                        if (elements.get(i).select("span.ah_icon").text().contains("NEW")) {
+                            item.setUpDown(0);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_new));
+                            item.setUpDownCnt("");
+                        } else if (elements.get(i).select("span.ah_icon").text().contains("상승")) {
+                            item.setUpDown(1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_up));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        } else {
+                            item.setUpDown(-1);
+                            item.setUpdownImg(ContextCompat.getDrawable(taskContext, R.drawable.rk_down));
+                            item.setUpDownCnt(elements.get(i).select("span.ah_s").text());
+                        }
+                        item.setUrl(elements.get(i).attr("href"));
+                        naverArr.add(item);
+
+                        *//*System.out.println("검색어 : " + elements.get(i).select("span.ah_k").text());
+                        System.out.println("랭킹 : " + (i + 1));
+                        System.out.println("상승여부 : " + elements.get(i).select("span.ah_icon").text()); //상승 NEW
+                        System.out.println("상승단계 : " + elements.get(i).select("span.ah_s").text());
+                        System.out.println("링크 URL : " + elements.get(i).attr("href"));
+                        System.out.println("------------------------------------------");*//*
+                    }*/
+                }
+
+
 
 
 
