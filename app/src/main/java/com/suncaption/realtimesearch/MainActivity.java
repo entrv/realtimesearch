@@ -2,6 +2,7 @@ package com.suncaption.realtimesearch;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     // FrameLayout에 각 메뉴의 Fragment를 바꿔 줌
     private FragmentManager fragmentManager = getSupportFragmentManager();
     // 4개의 메뉴에 들어갈 Fragment들
+
     private NaverFragment naverFragment = new NaverFragment();
     private DaumFragment daumFragment = new DaumFragment();
     private AddNewFragment addNewFragment = new AddNewFragment();
@@ -46,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private SoribadaFragment soribadaFragment = new SoribadaFragment();
     private BillboardFragment billboardFragment = new BillboardFragment();
     private FloFragment floFragment = new FloFragment();
-
-
+    Fragment active = melonFragment;
+    BottomNavigationView bottomNavigationView;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -55,6 +57,13 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        bottomNavigationView.getMenu().setGroupCheckable(0, true, false);
+        for (int i = 0; i < bottomNavigationView.getMenu().size(); i++) {
+            bottomNavigationView.getMenu().getItem(i).setChecked(false);
+        }
+        bottomNavigationView.getMenu().setGroupCheckable(0, true, true);
+
         int id = item.getItemId();
 
 //        if (id == R.id.action_settings) {
@@ -69,19 +78,21 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_site_soribada) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.frame_layout, soribadaFragment).commitAllowingStateLoss();
-
+            //transaction.remove(soribadaFragment).add(R.id.frame_layout, soribadaFragment).commitAllowingStateLoss();
             return true;
         }
         if (id == R.id.action_site_billboard) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.frame_layout, billboardFragment).commitAllowingStateLoss();
-
+            //transaction.remove(billboardFragment).add(R.id.frame_layout, billboardFragment).commitAllowingStateLoss();
             return true;
         }
         if (id == R.id.action_site_flo) {
+
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.frame_layout, floFragment).commitAllowingStateLoss();
-
+            //transaction.remove(floFragment).add(R.id.frame_layout, floFragment).commitAllowingStateLoss();
+            //transaction.hide(active).show(floFragment).commit();
             return true;
         }
 
@@ -129,10 +140,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
         // 첫 화면 지정
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.frame_layout, melonFragment).commitAllowingStateLoss();
+
+
 
         // bottomNavigationView의 아이템이 선택될 때 호출될 리스너 등록
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -142,24 +155,35 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.navigation_menu1: {
                         transaction.replace(R.id.frame_layout, melonFragment).commitAllowingStateLoss();
+                        //transaction.remove(melonFragment).add(R.id.frame_layout, melonFragment).commitAllowingStateLoss();
+
                         break;
                     }
                     case R.id.navigation_menu2: {
                         transaction.replace(R.id.frame_layout, mnetFragment).commitAllowingStateLoss();
+                        //transaction.remove(mnetFragment).add(R.id.frame_layout, mnetFragment).commitAllowingStateLoss();
+
                         break;
                     }
                     case R.id.navigation_menu3: {
                         transaction.replace(R.id.frame_layout, bugsFragment).commitAllowingStateLoss();
+                        //transaction.remove(bugsFragment).add(R.id.frame_layout, bugsFragment).commitAllowingStateLoss();
+
                         break;
                     }
                     case R.id.navigation_menu4: {
+
                         transaction.replace(R.id.frame_layout, genieFragment).commitAllowingStateLoss();
+                        //transaction.remove(genieFragment).add(R.id.frame_layout, genieFragment).commitAllowingStateLoss();
+
                         break;
                     }
                     case R.id.navigation_menu5: {
                         adFull.show();
 
                         transaction.replace(R.id.frame_layout, addNewFragment).commitAllowingStateLoss();
+                        //transaction.remove(addNewFragment).add(R.id.frame_layout, addNewFragment).commitAllowingStateLoss();
+
                         break;
                     }
 
