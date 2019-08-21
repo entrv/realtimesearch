@@ -89,8 +89,10 @@ public class MainActivity extends AppCompatActivity {
         }
         if (id == R.id.action_site_flo) {
 
+
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.frame_layout, floFragment).commitAllowingStateLoss();
+            //transaction.replace(R.id.frame_layout, new FloFragment()).commitAllowingStateLoss();
             //transaction.remove(floFragment).add(R.id.frame_layout, floFragment).commitAllowingStateLoss();
             //transaction.hide(active).show(floFragment).commit();
             return true;
