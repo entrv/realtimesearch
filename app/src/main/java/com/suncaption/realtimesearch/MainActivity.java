@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private FloFragment floFragment = new FloFragment();
     Fragment active = melonFragment;
     BottomNavigationView bottomNavigationView;
+    androidx.appcompat.widget.Toolbar toolbar;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -76,12 +77,14 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         if (id == R.id.action_site_soribada) {
+            setToolbarTitle("(소리바다)");
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.frame_layout, soribadaFragment).commitAllowingStateLoss();
             //transaction.remove(soribadaFragment).add(R.id.frame_layout, soribadaFragment).commitAllowingStateLoss();
             return true;
         }
         if (id == R.id.action_site_billboard) {
+            setToolbarTitle("(빌보드)");
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.frame_layout, billboardFragment).commitAllowingStateLoss();
             //transaction.remove(billboardFragment).add(R.id.frame_layout, billboardFragment).commitAllowingStateLoss();
@@ -89,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         }
         if (id == R.id.action_site_flo) {
 
-
+            setToolbarTitle("(플로)");
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.frame_layout, floFragment).commitAllowingStateLoss();
             //transaction.replace(R.id.frame_layout, new FloFragment()).commitAllowingStateLoss();
@@ -101,6 +104,10 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    public void setToolbarTitle(String title) {
+        String toolbarText = getResources().getString(R.string.app_name) + title;
+        toolbar.setTitle(toolbarText);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,7 +115,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        androidx.appcompat.widget.Toolbar toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.toolbar);
+        toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(getResources().getString(R.string.app_name) + "(멜론)");
         setSupportActionBar(toolbar);
 
         setAlarm();
@@ -156,25 +164,28 @@ public class MainActivity extends AppCompatActivity {
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 switch (item.getItemId()) {
                     case R.id.navigation_menu1: {
+                        setToolbarTitle("(멜론)");
                         transaction.replace(R.id.frame_layout, melonFragment).commitAllowingStateLoss();
                         //transaction.remove(melonFragment).add(R.id.frame_layout, melonFragment).commitAllowingStateLoss();
 
                         break;
                     }
                     case R.id.navigation_menu2: {
+                        setToolbarTitle("(엠넷)");
                         transaction.replace(R.id.frame_layout, mnetFragment).commitAllowingStateLoss();
                         //transaction.remove(mnetFragment).add(R.id.frame_layout, mnetFragment).commitAllowingStateLoss();
 
                         break;
                     }
                     case R.id.navigation_menu3: {
+                        setToolbarTitle("(벅스)");
                         transaction.replace(R.id.frame_layout, bugsFragment).commitAllowingStateLoss();
                         //transaction.remove(bugsFragment).add(R.id.frame_layout, bugsFragment).commitAllowingStateLoss();
 
                         break;
                     }
                     case R.id.navigation_menu4: {
-
+                        setToolbarTitle("(지니뮤직)");
                         transaction.replace(R.id.frame_layout, genieFragment).commitAllowingStateLoss();
                         //transaction.remove(genieFragment).add(R.id.frame_layout, genieFragment).commitAllowingStateLoss();
 
@@ -182,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     case R.id.navigation_menu5: {
                         adFull.show();
-
+                        setToolbarTitle("(검색어)");
                         transaction.replace(R.id.frame_layout, addNewFragment).commitAllowingStateLoss();
                         //transaction.remove(addNewFragment).add(R.id.frame_layout, addNewFragment).commitAllowingStateLoss();
 
@@ -224,6 +235,8 @@ public class MainActivity extends AppCompatActivity {
                 adFull.loadAd(adRequest3); //요청한 광고를 load 합니다.
             }
         });
+
+
     }
 
     private void setAlarm() {

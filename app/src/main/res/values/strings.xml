@@ -9,5 +9,5 @@
     <string name="add_rank_text_hint">알림을 원하는 단어 등록</string>
     <string name="banner_ad_unit_id">ca-app-pub-8297558424373117/1078596736</string>
     <string name="banner_reward_ad_unit_id">ca-app-pub-8297558424373117/9729389519</string>
-    <string name="action_site_choice">사이트선택</string>
+    <string name="action_site_choice">위젯설정</string>
 </resources>
