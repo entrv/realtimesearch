@@ -1017,7 +1017,7 @@ public class RRAsyncTask extends AsyncTask<Void, Void, Void> {
                                 .replace("상승","")
                                 .replace("유지",""));
 
-                        item.setThumbnail("http:/" +
+                        item.setThumbnail("http:" +
                                 elements.get(i).select("td a.cover img")
                                         .attr("src"));
                         item.setAlbumTitle(elements.get(i).select("a.albumtitle").text());

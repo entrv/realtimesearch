@@ -57,7 +57,7 @@ public class RRBackgroundService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startMyOwnForeground();
         } else {
-
+            startForeground(1, new Notification());
            // startForeground(NOTIFICATION_ID,
            //         new Notification.Builder(this, "realrankDummy").build());
         }
