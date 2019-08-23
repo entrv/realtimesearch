@@ -31,6 +31,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Map;
 
+import static com.google.android.gms.ads.RequestConfiguration.MAX_AD_CONTENT_RATING_PG;
+
 public class MainActivity extends AppCompatActivity {
     private static InterstitialAd adFull;
     public static final String TAG = "entrv";
@@ -211,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
         AdView adView = (AdView) findViewById(R.id.adView);
 
         AdRequest adRequest = new AdRequest.Builder()
-
+                .setMaxAdContentRating(MAX_AD_CONTENT_RATING_PG)
                 .build();
         adView.loadAd(adRequest);
 
@@ -219,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
         AdRequest adRequest2 = new AdRequest.Builder().build(); //새 광고요청
 
         adFull.setAdUnitId("ca-app-pub-8297558424373117/4105937520");
+
         adFull.loadAd(adRequest2); //요청한 광고를 load 합니다.
 
         adFull.setAdListener(new AdListener() { //전면 광고의 상태를 확인하는 리스너 등록
